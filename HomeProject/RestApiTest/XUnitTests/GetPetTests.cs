@@ -21,24 +21,28 @@ namespace RestApiTest.XUnitTests
         [MemberData(nameof(GetPetById_Negative_TestDataSet))]
         [Trait("Category", "GetPet")]
         [Trait("Category", "Negative")]
-        public void GetPetById_Negative_Test(long id, int expectedStatusCode, string expectedResponse)
+        public async Task GetPetById_Negative_Test(long id, int expectedStatusCode, string expectedResponse)
         {
             #region Arrange
             #endregion
 
             #region Act
-            var actual = petStore3Methods.TryGetPetById(id, out Pet? pet);
-
-            if (actual is null)
-                throw new XunitException($"Запрос не вернул ожидаемую ошибку, найден объект с id: {pet?.Id}");
+            var result = await petStore3Methods.TryGetPetById(id);
             #endregion
 
             #region Assert
-            AssertAll.Check
-            (
-                () => Assert.Equal(expectedStatusCode, actual?.StatusCode),
-                () => Assert.Equal(expectedResponse, actual?.Response)
-            );
+            result.Switch(response =>
+            {
+                throw new XunitException($"Request didn't return expected error, pet with id was found: {response.Id}");
+            },
+            exception =>
+            {
+                AssertAll.Check
+                (
+                    () => Assert.Equal(expectedStatusCode, exception.StatusCode),
+                    () => Assert.Equal(expectedResponse, exception.Response)
+                );
+            });
             #endregion
         }
 
@@ -46,28 +50,32 @@ namespace RestApiTest.XUnitTests
         [Trait("Category", "Smoke")]
         [Trait("Category", "GetPet")]
         [Trait("Category", "Positive")]
-        public void GetPetById_MinData_Positive_Test()
+        public async Task GetPetById_MinData_Positive_Test()
         {
             #region Arrange
             var expected = PetsTestData.GenerateMinPetTestData();
-            petStore3Methods.PostPet(expected, out Pet? postPet);
+            await petStore3Methods.PostPet(expected);
             #endregion
 
             #region Act
-            var exception = petStore3Methods.TryGetPetById(expected.Id, out Pet? actual);
-
-            if (exception is not null)
-                throw new XunitException($"Запрос GetPetById выполнился с ошибкой:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            var result = await petStore3Methods.TryGetPetById(expected.Id);
             #endregion
 
             #region Assert
-            AssertAll.Check
-            (
-                () => Assert.Equal(expected.Id, actual?.Id),
-                () => Assert.Empty(actual?.PhotoUrls),
-                () => Assert.Empty(actual?.Tags),
-                () => Assert.Equal(expected.Status, actual?.Status)
-            );
+            result.Switch(response =>
+            {
+                AssertAll.Check
+                (
+                    () => Assert.Equal(expected.Id, response?.Id),
+                    () => Assert.Empty(response?.PhotoUrls),
+                    () => Assert.Empty(response?.Tags),
+                    () => Assert.Equal(expected.Status, response?.Status)
+                );
+            },
+            exception =>
+            {
+                throw new XunitException($"Request GetPetById complited with error:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            });
             #endregion
         }
 
@@ -75,58 +83,62 @@ namespace RestApiTest.XUnitTests
         [Trait("Category", "Smoke")]
         [Trait("Category", "GetPet")]
         [Trait("Category", "Positive")]
-        public void GetPetById_MaxData_Positive_Test()
+        public async Task GetPetById_MaxData_Positive_Test()
         {
             #region Arrange
             var expected = PetsTestData.GenerateMaxPetTestData();
-            petStore3Methods.PostPet(expected, out Pet? postPet);
+            await petStore3Methods.PostPet(expected);
             #endregion
 
             #region Act
-            var exception = petStore3Methods.TryGetPetById(expected.Id, out Pet? actual);
-
-            if (exception is not null)
-                throw new XunitException($"Запрос GetPetById выполнился с ошибкой:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            var result = await petStore3Methods.TryGetPetById(expected.Id);     
             #endregion
 
             #region Assert
-            AssertAll.Check
-            (
-            () => Assert.Equal(expected.Id, actual?.Id),
-                () => Assert.Equal(expected.Name, actual?.Name),
-                () => Assert.Equal(expected.Category.Id, actual?.Category.Id),
-                () => Assert.Equal(expected.Category.Name, actual?.Category.Name),
-                () =>
-                {
-                    if (expected.PhotoUrls.Count == actual?.PhotoUrls.Count)
+            result.Switch(response =>
+            {
+                AssertAll.Check
+                (
+                    () => Assert.Equal(expected.Id, response?.Id),
+                    () => Assert.Equal(expected.Name, response?.Name),
+                    () => Assert.Equal(expected.Category.Id, response?.Category.Id),
+                    () => Assert.Equal(expected.Category.Name, response?.Category.Name),
+                    () =>
                     {
-                        expected.PhotoUrls.AsParallel().ForAll(url =>
+                        if (expected.PhotoUrls.Count == response?.PhotoUrls.Count)
                         {
-                            Assert.Contains<string>(url, actual?.PhotoUrls);
-                        });
-
-                        return;
-                    }
-
-                    throw new XunitException($"Количество полученных PhotoUrl отличается, передано: {expected.PhotoUrls.Count}, получено: {actual?.PhotoUrls.Count}.");
-                },
-                () =>
-                {
-                    if (expected.Tags.Count == actual?.Tags.Count)
+                            expected.PhotoUrls.AsParallel().ForAll(url =>
+                            {
+                                Assert.Contains<string>(url, response?.PhotoUrls);
+                            });
+                
+                            return;
+                        }
+                
+                        throw new XunitException("Number of received PhotoUrl is different:");
+                    },
+                    () =>
                     {
-                        expected.Tags.ToList().ForEach(exp_tag =>
+                        if (expected.Tags.Count == response?.Tags.Count)
                         {
-                            Assert.NotNull(actual?.Tags.FirstOrDefault(_ => _.Id == exp_tag.Id));
-                            Assert.NotNull(actual?.Tags.FirstOrDefault(_ => _.Name.Equals(exp_tag.Name)));
-                        });
-
-                        return;
-                    }
-
-                    throw new XunitException($"Количество полученных Tags отличается, передано: {expected.Tags.Count}, получено: {actual?.Tags.Count}.");
-                },
-                () => Assert.Equal(expected.Status, actual?.Status)
-            );
+                            expected.Tags.ToList().ForEach(exp_tag =>
+                            {
+                                Assert.NotNull(response?.Tags.FirstOrDefault(_ => _.Id == exp_tag.Id));
+                                Assert.NotNull(response?.Tags.FirstOrDefault(_ => _.Name.Equals(exp_tag.Name)));
+                            });
+                
+                            return;
+                        }
+                
+                        throw new XunitException("Number of received Tags is different:");
+                    },
+                    () => Assert.Equal(expected.Status, response?.Status)
+                );
+            },
+            exception =>
+            {
+                throw new XunitException($"Request GetPetById complited with error:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            });
             #endregion
         }
     }

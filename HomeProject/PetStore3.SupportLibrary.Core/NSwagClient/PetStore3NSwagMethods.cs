@@ -1,4 +1,5 @@
 ﻿using Common.Components;
+using OneOf;
 using Xunit.Sdk;
 
 namespace PetStore3.SupportLibrary.Core.NSwagClient
@@ -23,21 +24,19 @@ namespace PetStore3.SupportLibrary.Core.NSwagClient
         /// <param name="body">Create a new pet in the store</param>
         /// <returns>Successful operation</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public ApiException? PostPet(Pet body, out Pet? pet)
+        public async Task<OneOf<Pet, ApiException>> PostPet(Pet body)
         {
             try
             {
-                pet = _petStore3NSwagClient.AddPetAsync(body).Result;
-                return null;
+                return await _petStore3NSwagClient.AddPetAsync(body);                
             }
-            catch (AggregateException exeption)
+            catch (ApiException exception)
             {
-                pet = null;
-                return exeption.InnerExceptions.FirstOrDefault() as ApiException;
+                return exception;
             }
-            catch (Exception exeption)
+            catch (Exception exception)
             {
-                throw new XunitException(exeption.Message);
+                throw new XunitException(exception.Message);
             }
         }
 
@@ -47,21 +46,19 @@ namespace PetStore3.SupportLibrary.Core.NSwagClient
         /// <param name="id">ID of pet to return</param>
         /// <returns>successful operation</returns>
         /// <exception cref="ApiException">A server side error occurred.</exception>
-        public ApiException? TryGetPetById(long id, out Pet? pet)
+        public async Task<OneOf<Pet, ApiException>> TryGetPetById(long id)
         {
             try
             {
-                pet = _petStore3NSwagClient.GetPetByIdAsync(id).Result;
-                return null;
+                return await _petStore3NSwagClient.GetPetByIdAsync(id);
             }
-            catch (AggregateException exeption)
+            catch (ApiException exception)
             {
-                pet = null;
-                return exeption.InnerExceptions.FirstOrDefault() as ApiException;
+                return exception;
             }
-            catch (Exception exeption)
+            catch (Exception exception)
             {
-                throw new XunitException(exeption.Message);
+                throw new XunitException(exception.Message);
             }
         }
         #endregion

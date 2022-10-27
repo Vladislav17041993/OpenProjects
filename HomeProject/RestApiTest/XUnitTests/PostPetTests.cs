@@ -15,22 +15,26 @@ namespace RestApiTest.XUnitTests
         [InlineData(long.MaxValue)]
         [Trait("Category", "PostPet")]
         [Trait("Category", "Positive")]
-        public void PostPet_Id_Positive_Test(long id)
+        public async Task PostPet_Id_Positive_Test(long id)
         {
             #region Arrange
             var expected = PetsTestData.GenerateMinPetTestData();
-            #endregion
-
-            #region Act
             expected.Id = id;
-            var exception = petStore3Methods.PostPet(expected, out Pet? actual);
+            #endregion
 
-            if (exception is not null)
-                throw new XunitException($"Запрос PostPet выполнился с ошибкой:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            #region Act
+            var result = await petStore3Methods.PostPet(expected);
             #endregion
 
             #region Assert
-            Assert.Equal(expected.Id, actual?.Id);
+            result.Switch(response =>
+            {
+                Assert.Equal(expected.Id, response?.Id);
+            },
+            exception =>
+            {
+                throw new XunitException($"Request PostPet complited with error:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            });
             #endregion
         }
 
@@ -38,27 +42,31 @@ namespace RestApiTest.XUnitTests
         [Trait("Category", "Smoke")]
         [Trait("Category", "PostPet")]
         [Trait("Category", "Positive")]
-        public void PostPet_MinData_Positive_Test()
+        public async Task PostPet_MinData_Positive_Test()
         {
             #region Arrange
             var expected = PetsTestData.GenerateMinPetTestData();
             #endregion
 
             #region Act
-            var exception = petStore3Methods.PostPet(expected, out Pet? actual);
-
-            if (exception is not null)
-                throw new XunitException($"Запрос PostPet выполнился с ошибкой:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            var result = await petStore3Methods.PostPet(expected);
             #endregion
 
             #region Assert
-            AssertAll.Check
-            (
-                () => Assert.True(expected.Id == actual?.Id, $"Идентификатор не совпадает, ожидается: {expected.Id}, получено: {actual?.Id}."),
-                () => Assert.True(actual?.PhotoUrls.Count == 0, $"Массив PhotoUrl должен быть пустой, однако получено {actual?.PhotoUrls.Count} элементов."),
-                () => Assert.True(actual?.Tags.Count == 0, $"Массив Tags должен быть пустой, однако получено {actual?.Tags.Count} элементов."),
-                () => Assert.True(expected.Status == actual?.Status, $"Статус не совпадает, ожидается: {expected.Status}, получено: {actual?.Status}.")
-            );
+            result.Switch(response =>
+            {
+                AssertAll.Check
+                (
+                    () => Assert.True(expected.Id == response.Id, "Id exeption:"),
+                    () => Assert.True(response.PhotoUrls.Count == 0, "Array PhotoUrl should be empty:"),
+                    () => Assert.True(response.Tags.Count == 0, "Array Tags should be empty:"),
+                    () => Assert.True(expected.Status == response?.Status, "Status exeption:")
+                );
+            },
+            exception =>
+            {
+                throw new XunitException($"Request PostPet complited with error:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            });
             #endregion
         }
 
@@ -66,60 +74,64 @@ namespace RestApiTest.XUnitTests
         [Trait("Category", "Smoke")]
         [Trait("Category", "PostPet")]
         [Trait("Category", "Positive")]
-        public void PostPet_MaxData_Positive_Test()
+        public async Task PostPet_MaxData_Positive_Test()
         {
             #region Arrange
             var expected = PetsTestData.GenerateMaxPetTestData();
             #endregion
 
             #region Act
-            var exception = petStore3Methods.PostPet(expected, out Pet? actual);
-
-            if (exception is not null)
-                throw new XunitException($"Запрос PostPet выполнился с ошибкой:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            var result = await petStore3Methods.PostPet(expected);         
             #endregion
 
             #region Assert
-            AssertAll.Check
-            (
-                () => Assert.True(expected.Id == actual?.Id, $"Идентификатор не совпадает, ожидается: {expected.Id}, получено: {actual?.Id}."),
-                () => Assert.True(expected.Name.Equals(actual?.Name), $"Имя не совпадает ожидается: {expected.Name}, получено: {actual?.Name}."),
-                () => Assert.True(expected.Category.Id == actual?.Category.Id, $"Идентификатор категории не совпадает, ожидается: {expected.Category.Id}, получено: {actual?.Category.Id}."),
-                () => Assert.True(expected.Category.Name.Equals(actual?.Category.Name), $"Имя категории не совпадает, ожидается: {expected.Category.Name}, получено: {actual?.Category.Name}."),
-                () =>
-                {
-                    if (expected.PhotoUrls.Count == actual?.PhotoUrls.Count)
+            result.Switch(response =>
+            {
+                AssertAll.Check
+                (
+                    () => Assert.True(expected.Id == response.Id, "Id error:"),
+                    () => Assert.True(expected.Name.Equals(response.Name), "Name error:"),
+                    () => Assert.True(expected.Category.Id == response.Category.Id, "Category.Id error:"),
+                    () => Assert.True(expected.Category.Name.Equals(response.Category.Name), "Category.Name error:"),
+                    () =>
                     {
-                        expected.PhotoUrls.AsParallel().ForAll(url =>
+                        if (expected.PhotoUrls.Count == response.PhotoUrls.Count)
                         {
-                            Assert.True(actual?.PhotoUrls.Contains(url), $"Переданный PhotoUrl: {url} не получен.");
-                        });
-
-                        return;
-                    }
-
-                    throw new XunitException($"Количество полученных PhotoUrl отличается, передано: {expected.PhotoUrls.Count}, получено: {actual?.PhotoUrls.Count}.");
-                },
-                () =>
-                {
-                    if (expected.Tags.Count == actual?.Tags.Count)
+                            expected.PhotoUrls.AsParallel().ForAll(url =>
+                            {
+                                Assert.True(response.PhotoUrls.Contains(url), "PhotoUrl didn't found:");
+                            });
+                    
+                            return;
+                        }
+                    
+                        throw new XunitException("Number of received PhotoUrl is different:");
+                    },
+                    () =>
                     {
-                        expected.Tags.AsParallel().ForAll(tag =>
+                        if (expected.Tags.Count == response.Tags.Count)
                         {
-                            AssertAll.Check
-                            (
-                                () => Assert.True(actual?.Tags.FirstOrDefault(_ => _.Id == tag.Id) != default, $"Переданный таг: id - {tag.Id}, Name - {tag.Name} не получен по id."),
-                                () => Assert.True(actual?.Tags.FirstOrDefault(_ => _.Name.Equals(tag.Name)) != default, $"Переданный таг: id - {tag.Id}, Name - {tag.Name} не получен по name.")
-                            );
-                        });
-
-                        return;
-                    }
-
-                    throw new XunitException($"Количество полученных Tags отличается, передано: {expected.Tags.Count}, получено: {actual?.Tags.Count}.");
-                },
-                () => Assert.True(expected.Status == actual?.Status, $"Статус не совпадает, ожидается: {expected.Status}, получено: {actual?.Status}.")
-            );
+                            expected.Tags.AsParallel().ForAll(tag =>
+                            {
+                                AssertAll.Check
+                                (
+                                    () => Assert.True(response.Tags.FirstOrDefault(_ => _.Id == tag.Id) != default, "Tag.Id didn't found:"),
+                                    () => Assert.True(response.Tags.FirstOrDefault(_ => _.Name.Equals(tag.Name)) != default, "Tag.Name didn't found:")
+                                );
+                            });
+                    
+                            return;
+                        }
+                    
+                        throw new XunitException("Number of received Tags is different:");
+                    },
+                    () => Assert.True(expected.Status == response.Status, "Status error:")
+                );
+            },
+            exception =>
+            {
+                throw new XunitException($"Request PostPet complited with error:{exception?.Response}, statusCode: {exception?.StatusCode}");
+            });           
             #endregion
         }
 
