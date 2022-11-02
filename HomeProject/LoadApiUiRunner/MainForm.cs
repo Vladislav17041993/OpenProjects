@@ -127,7 +127,7 @@ namespace LoadApiUiRunner
                     {
                         StartInfo = new ProcessStartInfo
                         {
-                            Arguments = $"{scenario.Key}",
+                            Arguments = $"{scenario.Key} {scenario.Value.Rps} {scenario.Value.During} {scenario.Value.WithWarmUp} {scenario.Value.WarmUpDuring}",
                             FileName = Path.Combine(Directory.GetCurrentDirectory(), "LoadApiTestsConsole\\LoadApiTest.exe")
                         }
                     };

@@ -1,25 +1,28 @@
-﻿using LoadApiTest.PetStoreScenarios;
+﻿using LoadApiTest.Interfaces;
+using LoadApiTest.PetStoreScenarios;
 
 namespace LoadApiTest
 {
     public class Program
     {
-        public delegate void P();
-
         public static void Main(string[] args)
         {
-            StoreScenarios storeScenarios = new();
-            var argsList = args.ToList();
+            //args = new string[] { "PostOrderScenario", "1", "1", "false", "0" };
 
-            if (argsList.Contains("PostOrderScenario"))
-            {
-                storeScenarios.PostOrderLoadTest();
-            }
+            var scenarioName = args[0];
+            var rps = int.Parse(args[1]);
+            var during = double.Parse(args[2]);
+            var withWarmUp = bool.Parse(args[3]);
+            var warmUpDuration = int.Parse(args[4]);
 
-            if (argsList.Contains("GetOrderScenario"))
-            {
-                storeScenarios.GetOrderLoadTest();
-            }
+            var scenario = ScenarioDictionary[scenarioName];
+            scenario.Run(rps, during, withWarmUp, warmUpDuration);
         }
+
+        private static Dictionary<string, IScenario> ScenarioDictionary = new()
+        {
+            {"PostOrderScenario", new PostOrderLoadTest() },
+            {"GetOrderScenario", new GetOrderLoadTest() }
+        };
     }
 }
