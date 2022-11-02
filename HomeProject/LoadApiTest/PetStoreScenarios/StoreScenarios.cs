@@ -35,9 +35,9 @@ namespace LoadApiTest.PetStoreScenarios
 
             var scenario = ScenarioBuilder
                 .CreateScenario("PostOrder_LoadTest", step)                
-                .WithWarmUpDuration(Seconds(5))
+                .WithWarmUpDuration(Seconds(0))
                 .WithLoadSimulations(
-                    Simulation.InjectPerSec(rate: 5, during: TimeSpan.FromSeconds(30))
+                    Simulation.InjectPerSec(rate: 1, during: TimeSpan.FromSeconds(10))
                 );
 
             NBomberRunner
@@ -99,15 +99,14 @@ namespace LoadApiTest.PetStoreScenarios
             var scenario = ScenarioBuilder
                 .CreateScenario("PrepareData_PostOrders", step)
                 .WithLoadSimulations(
-                    Simulation.InjectPerSec(rate: 2, during: TimeSpan.FromSeconds(20))
+                    Simulation.InjectPerSec(rate: 1, during: TimeSpan.FromSeconds(10))
                 );
 
             var scenario2 = ScenarioBuilder
                 .CreateScenario("GetOrder_LoadTest", step2)
                 .WithLoadSimulations(
-                    Simulation.InjectPerSec(rate: 4, during: TimeSpan.FromSeconds(10))
+                    Simulation.InjectPerSec(rate: 1, during: TimeSpan.FromSeconds(20))
                 );
-
 
             NBomberRunner
                 .RegisterScenarios(scenario, scenario2)
