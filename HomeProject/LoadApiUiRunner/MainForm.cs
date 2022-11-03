@@ -1,6 +1,7 @@
 ﻿using LoadApiUiRunner.DataStorage;
 using LoadApiUiRunner.DataStorage.Models;
 using System.Diagnostics;
+using System.Text.RegularExpressions;
 
 namespace LoadApiUiRunner
 {
@@ -13,11 +14,6 @@ namespace LoadApiUiRunner
         }
 
         private void menuToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void groupBox2_Enter(object sender, EventArgs e)
         {
 
         }
@@ -171,13 +167,9 @@ namespace LoadApiUiRunner
         {
             this.SearchTextBox.Text = "";
         }
-
-        
+       
         private void SearchTextBox_TextChanged(object sender, EventArgs e)
         {
-            
-
-
             string SearchText = this.SearchTextBox.Text;
             if (SearchText == "")
             {
@@ -190,6 +182,35 @@ namespace LoadApiUiRunner
                 this.LoadTestsTreeView.SelectedNode.Expand();
                 this.LoadTestsTreeView.Select();
             };
+        }
+
+        private void label1_Click_1(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void RpsTextBox_TextChanged(object sender, EventArgs e)
+        {
+
+            if (string.IsNullOrEmpty(RpsTextBox.Text))
+            {
+                ErrorLabel.Text = "Field RPS is empty";
+                return;
+            }
+
+            if (short.TryParse(RpsTextBox.Text, out var result))
+            {
+                if (result > 500)
+                {
+                    ErrorLabel.Text = "RPS value can't be more then 500";
+                    return;
+                }
+                ErrorLabel.Text = string.Empty;
+            }
+            else
+            {
+                ErrorLabel.Text = $"RPS value {RpsTextBox.Text} should be digit.";
+            }
         }
     }
 }

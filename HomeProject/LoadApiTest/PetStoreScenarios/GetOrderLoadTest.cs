@@ -1,12 +1,13 @@
 ﻿using LoadApiTest.Interfaces;
 using LoadApiTest.PetStoreScenarios.Steps;
 using NBomber.CSharp;
-using static NBomber.Time;
 
 namespace LoadApiTest.PetStoreScenarios
 {
-    public class GetOrderLoadTest : IScenario
+    public class GetOrderLoadTest : BaseLoadTest, IScenario
     {
+        private const string ScenarioName = "GetOrder_LoadTest";
+
         public void Run(int rps, double during, bool WithWarmUp, int WarmUpDuring)
         {
             PostOrderLoadTest postOrderLoadTest = new()
@@ -20,16 +21,7 @@ namespace LoadApiTest.PetStoreScenarios
 
             var getOrderStep = Steps.GetOrderStep(dataFeed);
 
-            var scenario = ScenarioBuilder
-                .CreateScenario("GetOrder_LoadTest", getOrderStep)
-                .WithWarmUpDuration(Seconds(WarmUpDuring))
-                .WithLoadSimulations(
-                    Simulation.InjectPerSec(rate: rps, during: TimeSpan.FromMinutes(during))
-                );
-
-            NBomberRunner
-                .RegisterScenarios(scenario)
-                .Run();
+            GenerateScenario(rps, during, WithWarmUp, WarmUpDuring, ScenarioName, getOrderStep);
         }
 
     }

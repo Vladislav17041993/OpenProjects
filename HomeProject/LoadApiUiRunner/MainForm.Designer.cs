@@ -51,18 +51,21 @@
             this.RpsLabel = new System.Windows.Forms.Label();
             this.RpsTextBox = new System.Windows.Forms.TextBox();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.StartButton = new System.Windows.Forms.Button();
             this.ScenarioList = new System.Windows.Forms.GroupBox();
             this.ScenarioListTextBox = new System.Windows.Forms.TextBox();
             this.LoadTestListGroupbox = new System.Windows.Forms.GroupBox();
             this.SearchTextBox = new System.Windows.Forms.TextBox();
             this.LoadTestsTreeView = new System.Windows.Forms.TreeView();
+            this.StartButton = new System.Windows.Forms.Button();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.ErrorLabel = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.BaseTableLayout.SuspendLayout();
             this.TestSettings.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.ScenarioList.SuspendLayout();
             this.LoadTestListGroupbox.SuspendLayout();
+            this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -71,7 +74,7 @@
             this.menuToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(892, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(898, 24);
             this.menuStrip1.TabIndex = 0;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -100,7 +103,7 @@
             this.BaseTableLayout.Name = "BaseTableLayout";
             this.BaseTableLayout.RowCount = 1;
             this.BaseTableLayout.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.BaseTableLayout.Size = new System.Drawing.Size(868, 392);
+            this.BaseTableLayout.Size = new System.Drawing.Size(874, 439);
             this.BaseTableLayout.TabIndex = 1;
             // 
             // TestSettings
@@ -115,9 +118,9 @@
             this.TestSettings.Controls.Add(this.DuringLabel);
             this.TestSettings.Controls.Add(this.RpsLabel);
             this.TestSettings.Controls.Add(this.RpsTextBox);
-            this.TestSettings.Location = new System.Drawing.Point(292, 3);
+            this.TestSettings.Location = new System.Drawing.Point(294, 3);
             this.TestSettings.Name = "TestSettings";
-            this.TestSettings.Size = new System.Drawing.Size(283, 386);
+            this.TestSettings.Size = new System.Drawing.Size(285, 433);
             this.TestSettings.TabIndex = 1;
             this.TestSettings.TabStop = false;
             this.TestSettings.Text = "TestSettings";
@@ -186,13 +189,15 @@
             // 
             // RpsTextBox
             // 
+            this.RpsTextBox.CausesValidation = false;
             this.RpsTextBox.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.RpsTextBox.Location = new System.Drawing.Point(84, 25);
             this.RpsTextBox.Name = "RpsTextBox";
             this.RpsTextBox.Size = new System.Drawing.Size(30, 23);
             this.RpsTextBox.TabIndex = 1;
-            this.RpsTextBox.Text = "5";
+            this.RpsTextBox.Text = "2";
             this.RpsTextBox.Visible = false;
+            this.RpsTextBox.TextChanged += new System.EventHandler(this.RpsTextBox_TextChanged);
             // 
             // tableLayoutPanel1
             // 
@@ -201,26 +206,13 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.tableLayoutPanel1.ColumnCount = 1;
             this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.tableLayoutPanel1.Controls.Add(this.StartButton, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.ScenarioList, 0, 0);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(581, 3);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(585, 3);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 2;
+            this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 88.44086F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 11.55914F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(284, 386);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(286, 433);
             this.tableLayoutPanel1.TabIndex = 2;
-            // 
-            // StartButton
-            // 
-            this.StartButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.StartButton.Location = new System.Drawing.Point(171, 346);
-            this.StartButton.Name = "StartButton";
-            this.StartButton.Size = new System.Drawing.Size(110, 37);
-            this.StartButton.TabIndex = 0;
-            this.StartButton.Text = "Start";
-            this.StartButton.UseVisualStyleBackColor = true;
-            this.StartButton.Click += new System.EventHandler(this.StartButton_Click);
             // 
             // ScenarioList
             // 
@@ -230,7 +222,7 @@
             this.ScenarioList.Controls.Add(this.ScenarioListTextBox);
             this.ScenarioList.Location = new System.Drawing.Point(3, 3);
             this.ScenarioList.Name = "ScenarioList";
-            this.ScenarioList.Size = new System.Drawing.Size(278, 335);
+            this.ScenarioList.Size = new System.Drawing.Size(280, 427);
             this.ScenarioList.TabIndex = 1;
             this.ScenarioList.TabStop = false;
             this.ScenarioList.Text = "ScenarioList";
@@ -245,7 +237,7 @@
             this.ScenarioListTextBox.Name = "ScenarioListTextBox";
             this.ScenarioListTextBox.ReadOnly = true;
             this.ScenarioListTextBox.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
-            this.ScenarioListTextBox.Size = new System.Drawing.Size(266, 310);
+            this.ScenarioListTextBox.Size = new System.Drawing.Size(268, 402);
             this.ScenarioListTextBox.TabIndex = 0;
             // 
             // LoadTestListGroupbox
@@ -257,7 +249,7 @@
             this.LoadTestListGroupbox.Controls.Add(this.LoadTestsTreeView);
             this.LoadTestListGroupbox.Location = new System.Drawing.Point(3, 3);
             this.LoadTestListGroupbox.Name = "LoadTestListGroupbox";
-            this.LoadTestListGroupbox.Size = new System.Drawing.Size(283, 386);
+            this.LoadTestListGroupbox.Size = new System.Drawing.Size(285, 433);
             this.LoadTestListGroupbox.TabIndex = 0;
             this.LoadTestListGroupbox.TabStop = false;
             this.LoadTestListGroupbox.Text = "LoadTestsList";
@@ -270,11 +262,11 @@
             this.SearchTextBox.Location = new System.Drawing.Point(6, 20);
             this.SearchTextBox.MaxLength = 50;
             this.SearchTextBox.Name = "SearchTextBox";
-            this.SearchTextBox.Size = new System.Drawing.Size(271, 23);
+            this.SearchTextBox.Size = new System.Drawing.Size(273, 23);
             this.SearchTextBox.TabIndex = 1;
             this.SearchTextBox.Text = "Search";
-            this.SearchTextBox.TextChanged += new System.EventHandler(this.SearchTextBox_TextChanged);
             this.SearchTextBox.Click += new System.EventHandler(this.SearchTextBox_Click);
+            this.SearchTextBox.TextChanged += new System.EventHandler(this.SearchTextBox_TextChanged);
             // 
             // LoadTestsTreeView
             // 
@@ -299,16 +291,50 @@
             treeNode6.Text = "PetStore3Api";
             this.LoadTestsTreeView.Nodes.AddRange(new System.Windows.Forms.TreeNode[] {
             treeNode6});
-            this.LoadTestsTreeView.Size = new System.Drawing.Size(271, 331);
+            this.LoadTestsTreeView.Size = new System.Drawing.Size(273, 378);
             this.LoadTestsTreeView.TabIndex = 0;
             this.LoadTestsTreeView.AfterCheck += new System.Windows.Forms.TreeViewEventHandler(this.LoadTestTreeView_AfterCheck);
             this.LoadTestsTreeView.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.LoadTestsTreeView_AfterSelect);
+            // 
+            // StartButton
+            // 
+            this.StartButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.StartButton.Location = new System.Drawing.Point(776, 469);
+            this.StartButton.Name = "StartButton";
+            this.StartButton.Size = new System.Drawing.Size(110, 37);
+            this.StartButton.TabIndex = 0;
+            this.StartButton.Text = "Start";
+            this.StartButton.UseVisualStyleBackColor = true;
+            this.StartButton.Click += new System.EventHandler(this.StartButton_Click);
+            // 
+            // panel1
+            // 
+            this.panel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.panel1.Controls.Add(this.ErrorLabel);
+            this.panel1.Location = new System.Drawing.Point(12, 467);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(758, 39);
+            this.panel1.TabIndex = 2;
+            // 
+            // ErrorLabel
+            // 
+            this.ErrorLabel.AutoSize = true;
+            this.ErrorLabel.ForeColor = System.Drawing.Color.Red;
+            this.ErrorLabel.Location = new System.Drawing.Point(9, 8);
+            this.ErrorLabel.Name = "ErrorLabel";
+            this.ErrorLabel.Size = new System.Drawing.Size(0, 15);
+            this.ErrorLabel.TabIndex = 0;
+            this.ErrorLabel.Click += new System.EventHandler(this.label1_Click_1);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(892, 431);
+            this.ClientSize = new System.Drawing.Size(898, 510);
+            this.Controls.Add(this.StartButton);
+            this.Controls.Add(this.panel1);
             this.Controls.Add(this.BaseTableLayout);
             this.Controls.Add(this.menuStrip1);
             this.MainMenuStrip = this.menuStrip1;
@@ -325,6 +351,8 @@
             this.ScenarioList.PerformLayout();
             this.LoadTestListGroupbox.ResumeLayout(false);
             this.LoadTestListGroupbox.PerformLayout();
+            this.panel1.ResumeLayout(false);
+            this.panel1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -350,5 +378,7 @@
         private GroupBox ScenarioList;
         private TextBox ScenarioListTextBox;
         private TextBox SearchTextBox;
+        private Panel panel1;
+        private Label ErrorLabel;
     }
 }

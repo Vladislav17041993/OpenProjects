@@ -7,7 +7,7 @@ namespace LoadApiTest
     {
         public static void Main(string[] args)
         {
-            //args = new string[] { "PostOrderScenario", "1", "1", "false", "0" };
+            //args = new string[] { "GetOrderScenario", "1", "1", "false", "0" };
 
             var scenarioName = args[0];
             var rps = int.Parse(args[1]);
